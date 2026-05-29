@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KidCria - Atividades para crianças longe das telas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #FAFAF7;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: #FFF8F0;
+      border-bottom: 1px solid #F0D9B5;
+      padding: 1.25rem 1.5rem 1rem;
+      text-align: center;
+    }
+
+    .logo {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 2rem;
+      color: #D86A2B;
+      line-height: 1;
+    }
+
+    .logo span { color: #4A9B6F; }
+
+    .tagline {
+      font-size: 13px;
+      color: #8B7355;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .body {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 2rem;
+    }
+
+    .card {
+      background: white;
+      border: 0.5px solid #E5E0D8;
+      border-radius: 16px;
+      padding: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #8B7355;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .age-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .age-btn {
+      background: #FFF8F0;
+      border: 1.5px solid #F0D9B5;
+      border-radius: 12px;
+      padding: 0.7rem 0.4rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .age-btn:hover, .age-btn.active {
+      background: #FEF0E0;
+      border-color: #D86A2B;
+      border-width: 2px;
+    }
+
+    .age-emoji { font-size: 1.5rem; display: block; margin-bottom: 3px; }
+    .age-label { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 13px; color: #D86A2B; display: block; }
+    .age-sub { font-size: 11px; color: #8B7355; font-weight: 500; }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .cat-btn {
+      background: #F5FBF5;
+      border: 1.5px solid #C5E8D0;
+      border-radius: 12px;
+      padding: 0.7rem 0.8rem;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+
+    .cat-btn:hover, .cat-btn.active {
+      background: #E8F7ED;
+      border-color: #4A9B6F;
+      border-width: 2px;
+    }
+
+    .cat-btn.fe { background: #FEF9E7; border-color: #F5D76E; }
+    .cat-btn.fe:hover, .cat-btn.fe.active { background: #FDF0B0; border-color: #D4AC0D; }
+    .cat-btn.arte { background: #FFF8F0; border-color: #F0D9B5; }
+    .cat-btn.arte:hover, .cat-btn.arte.active { background: #FEF0E0; border-color: #D86A2B; }
+    .cat-btn.brincadeira { background: #F7F2FC; border-color: #D8C7F0; }
+    .cat-btn.brincadeira:hover, .cat-btn.brincadeira.active { background: #EDE0F8; border-color: #7B5EA7; }
+
+    .cat-icon { font-size: 1.35rem; }
+    .cat-name { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 13.5px; color: #1a1a1a; display: block; }
+    .cat-desc { font-size: 11px; color: #666; font-weight: 500; }
+
+    .generate-btn {
+      width: 100%;
+      background: #D86A2B;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 1rem;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 1.25rem;
+    }
+
+    .generate-btn:hover:not(:disabled) { background: #C05A22; }
+    .generate-btn:disabled { background: #D4B89A; cursor: not-allowed; }
+
+    .error-box {
+      background: #FFF0F0;
+      border: 0.5px solid #FFBCBC;
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      color: #A32D2D;
+      font-size: 13px;
+      margin-bottom: 1rem;
+      text-align: center;
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 1.5rem;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 700;
+      font-size: 15px;
+      color: #8B7355;
+      display: none;
+    }
+
+    .result-card {
+      background: white;
+      border: 0.5px solid #E5E0D8;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .result-header {
+      padding: 1.2rem 1.25rem;
+      color: white;
+    }
+
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .result-title {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 1.35rem;
+      line-height: 1.25;
+    }
+
+    .result-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .meta-chip {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .result-body { padding: 1.25rem; }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #D86A2B;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      margin-top: 1rem;
+    }
+
+    .section-title:first-child { margin-top: 0; }
+
+    .description {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #333;
+    }
+
+    .materials {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .material-tag {
+      background: #FFF8F0;
+      border: 0.5px solid #F0D9B5;
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #8B5E3C;
+    }
+
+    .steps { list-style: none; margin-top: 2px; }
+
+    .step {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 7px 0;
+      border-bottom: 0.5px solid #F0EDE8;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #222;
+    }
+
+    .step:last-child { border-bottom: none; }
+
+    .step-num {
+      background: #4A9B6F;
+      color: white;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .tip {
+      background: #FEF9E7;
+      border: 0.5px solid #F5D76E;
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      font-size: 13px;
+      color: #7D6008;
+      line-height: 1.6;
+      margin-top: 2px;
+    }
+
+    .again-btn {
+      width: 100%;
+      background: transparent;
+      color: #4A9B6F;
+      border: 2px solid #4A9B6F;
+      border-radius: 14px;
+      padding: 0.85rem;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      transition: all 0.15s;
+      display: none;
+    }
+
+    .again-btn:hover { background: #E8F7ED; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">Kid<span>Cria</span> ✂️</div>
+    <div class="tagline">Atividades para crianças longe das telas</div>
+  </div>
+
+  <div class="body">
+
+    <div class="card">
+      <div class="section-label">👧 Faixa etária</div>
+      <div class="age-grid">
+        <button class="age-btn active" data-age="0-3" onclick="selectAge(this)">
+          <span class="age-emoji">🍼</span>
+          <span class="age-label">Bebês</span>
+          <span class="age-sub">0 – 3 anos</span>
+        </button>
+        <button class="age-btn" data-age="4-6" onclick="selectAge(this)">
+          <span class="age-emoji">🎒</span>
+          <span class="age-label">Pré-escola</span>
+          <span class="age-sub">4 – 6 anos</span>
+        </button>
+        <button class="age-btn" data-age="7-11" onclick="selectAge(this)">
+          <span class="age-emoji">📚</span>
+          <span class="age-label">Crianças</span>
+          <span class="age-sub">7 – 11 anos</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">🎨 Tipo de atividade</div>
+      <div class="cat-grid">
+        <button class="cat-btn arte active" data-cat="Arte" onclick="selectCat(this)">
+          <span class="cat-icon">🎨</span>
+          <span>
+            <span class="cat-name">Arte</span>
+            <span class="cat-desc">Desenho, pintura, colagem</span>
+          </span>
+        </button>
+        <button class="cat-btn brincadeira" data-cat="Brincadeira" onclick="selectCat(this)">
+          <span class="cat-icon">🤸</span>
+          <span>
+            <span class="cat-name">Brincadeira</span>
+            <span class="cat-desc">Jogos, movimento, diversão</span>
+          </span>
+        </button>
+        <button class="cat-btn" data-cat="Natureza" onclick="selectCat(this)">
+          <span class="cat-icon">🌿</span>
+          <span>
+            <span class="cat-name">Natureza</span>
+            <span class="cat-desc">Jardim, bichos, exploração</span>
+          </span>
+        </button>
+        <button class="cat-btn fe" data-cat="Fé Cristã" onclick="selectCat(this)">
+          <span class="cat-icon">✝️</span>
+          <span>
+            <span class="cat-name">Fé Cristã</span>
+            <span class="cat-desc">Bíblia, oração, valores</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="error-box" id="error-box"></div>
+
+    <button class="generate-btn" id="gen-btn" onclick="generate()">
+      ✨ Gerar atividade agora!
+    </button>
+
+    <div class="loading" id="loading">Criando uma atividade incrível para você... 🎉</div>
+
+    <div class="result-card" id="result-card">
+      <div class="result-header" id="result-header">
+        <div class="result-badge" id="result-badge"></div>
+        <div class="result-title" id="result-title"></div>
+        <div class="result-meta" id="result-meta"></div>
+      </div>
+      <div class="result-body">
+        <div class="section-title">Sobre a atividade</div>
+        <div class="description" id="result-desc"></div>
+        <div id="materials-section">
+          <div class="section-title">Materiais necessários</div>
+          <div class="materials" id="result-materials"></div>
+        </div>
+        <div id="steps-section">
+          <div class="section-title">Como fazer</div>
+          <ul class="steps" id="result-steps"></ul>
+        </div>
+        <div id="tip-section">
+          <div class="section-title">💡 Dica especial</div>
+          <div class="tip" id="result-tip"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="again-btn" id="again-btn" onclick="generate()">
+      🔄 Gerar outra atividade
+    </button>
+
+  </div>
+
+  <script>
+    const AGE_LABELS = { '0-3': '0–3 anos', '4-6': '4–6 anos', '7-11': '7–11 anos' };
+    const CAT_EMOJIS = { 'Arte': '🎨', 'Brincadeira': '🤸', 'Natureza': '🌿', 'Fé Cristã': '✝️' };
+    const HEADERS = {
+      'Arte': 'linear-gradient(135deg,#D86A2B,#C05A22)',
+      'Brincadeira': 'linear-gradient(135deg,#7B5EA7,#6A4E96)',
+      'Natureza': 'linear-gradient(135deg,#4A9B6F,#3A8560)',
+      'Fé Cristã': 'linear-gradient(135deg,#D4AC0D,#B8920A)',
+    };
+
+    let selectedAge = '0-3';
+    let selectedCat = 'Arte';
+    let isLoading = false;
+
+    function selectAge(btn) {
+      document.querySelectorAll('.age-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedAge = btn.dataset.age;
+    }
+
+    function selectCat(btn) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedCat = btn.dataset.cat;
+    }
+
+    async function generate() {
+      if (isLoading) return;
+      isLoading = true;
+
+      const genBtn = document.getElementById('gen-btn');
+      const loading = document.getElementById('loading');
+      const errorBox = document.getElementById('error-box');
+      const resultCard = document.getElementById('result-card');
+      const againBtn = document.getElementById('again-btn');
+
+      genBtn.disabled = true;
+      genBtn.textContent = '⏳ Gerando...';
+      loading.style.display = 'block';
+      errorBox.style.display = 'none';
+      resultCard.style.display = 'none';
+      againBtn.style.display = 'none';
+
+      try {
+        const res = await fetch('/.netlify/functions/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ age: selectedAge, cat: selectedCat }),
+        });
+
+        if (!res.ok) throw new Error('API error');
+        const activity = await res.json();
+
+        document.getElementById('result-header').style.background = HEADERS[selectedCat];
+        document.getElementById('result-badge').textContent = `${CAT_EMOJIS[selectedCat]} ${selectedCat}`;
+        document.getElementById('result-title').textContent = activity.title;
+        document.getElementById('result-meta').innerHTML =
+          `<span class="meta-chip">👧 ${AGE_LABELS[selectedAge]}</span>
+           <span class="meta-chip">⏱ ${activity.duration}</span>
+           <span class="meta-chip">⭐ ${activity.difficulty}</span>`;
+        document.getElementById('result-desc').textContent = activity.description;
+
+        const materialsEl = document.getElementById('result-materials');
+        materialsEl.innerHTML = (activity.materials || [])
+          .map(m => `<span class="material-tag">${m}</span>`).join('');
+
+        const stepsEl = document.getElementById('result-steps');
+        stepsEl.innerHTML = (activity.steps || [])
+          .map((s, i) => `<li class="step"><span class="step-num">${i+1}</span><span>${s}</span></li>`).join('');
+
+        document.getElementById('result-tip').textContent = activity.tip;
+
+        resultCard.style.display = 'block';
+        againBtn.style.display = 'block';
+
+      } catch {
+        errorBox.textContent = '⚠️ Erro ao gerar atividade. Tente novamente!';
+        errorBox.style.display = 'block';
+      }
+
+      loading.style.display = 'none';
+      genBtn.disabled = false;
+      genBtn.textContent = '✨ Gerar atividade agora!';
+      isLoading = false;
+    }
+  </script>
+
+</body>
+</html>
