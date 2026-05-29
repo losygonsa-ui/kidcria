@@ -305,6 +305,45 @@
     }
 
     .again-btn:hover { background: #E8F7ED; }
+
+    .usage-bar-wrap {
+      background: #F0EDE8;
+      border-radius: 20px;
+      height: 8px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .usage-bar {
+      height: 8px;
+      border-radius: 20px;
+      background: #4A9B6F;
+      transition: width 0.4s;
+    }
+
+    .usage-bar.warning { background: #D86A2B; }
+    .usage-bar.danger { background: #C0392B; }
+
+    .usage-text {
+      font-size: 12px;
+      color: #8B7355;
+      font-weight: 600;
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    .limit-box {
+      background: #FFF0F0;
+      border: 0.5px solid #FFBCBC;
+      border-radius: 12px;
+      padding: 1rem;
+      color: #A32D2D;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
   </style>
 </head>
 <body>
@@ -371,6 +410,19 @@
       </div>
     </div>
 
+    <div class="card" id="usage-card">
+      <div class="section-label">⚡ Suas gerações</div>
+      <div class="usage-bar-wrap">
+        <div class="usage-bar" id="usage-bar" style="width: 0%"></div>
+      </div>
+      <div class="usage-text" id="usage-text">0 de 100 gerações usadas</div>
+    </div>
+
+    <div class="limit-box" id="limit-box">
+      😔 Você já usou todas as suas <strong>100 gerações</strong>.<br>
+      Obrigada por usar o KidCria! ✂️
+    </div>
+
     <div class="error-box" id="error-box"></div>
 
     <button class="generate-btn" id="gen-btn" onclick="generate()">
@@ -410,6 +462,37 @@
   </div>
 
   <script>
+    const LIMIT = 100;
+
+    function getUsage() {
+      return parseInt(localStorage.getItem('kidcria_usage') || '0');
+    }
+
+    function incrementUsage() {
+      const n = getUsage() + 1;
+      localStorage.setItem('kidcria_usage', n);
+      return n;
+    }
+
+    function updateUsageUI() {
+      const used = getUsage();
+      const pct = Math.min((used / LIMIT) * 100, 100);
+      const bar = document.getElementById('usage-bar');
+      const text = document.getElementById('usage-text');
+      const genBtn = document.getElementById('gen-btn');
+      const limitBox = document.getElementById('limit-box');
+
+      bar.style.width = pct + '%';
+      bar.className = 'usage-bar' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warning' : '');
+      text.textContent = `${used} de ${LIMIT} gerações usadas`;
+
+      if (used >= LIMIT) {
+        genBtn.disabled = true;
+        genBtn.textContent = '🚫 Limite atingido';
+        limitBox.style.display = 'block';
+      }
+    }
+
     const AGE_LABELS = { '0-3': '0–3 anos', '4-6': '4–6 anos', '7-11': '7–11 anos' };
     const CAT_EMOJIS = { 'Arte': '🎨', 'Brincadeira': '🤸', 'Natureza': '🌿', 'Fé Cristã': '✝️' };
     const HEADERS = {
@@ -422,6 +505,8 @@
     let selectedAge = '0-3';
     let selectedCat = 'Arte';
     let isLoading = false;
+
+    updateUsageUI();
 
     function selectAge(btn) {
       document.querySelectorAll('.age-btn').forEach(b => b.classList.remove('active'));
@@ -437,6 +522,7 @@
 
     async function generate() {
       if (isLoading) return;
+      if (getUsage() >= LIMIT) return;
       isLoading = true;
 
       const genBtn = document.getElementById('gen-btn');
@@ -481,6 +567,8 @@
 
         document.getElementById('result-tip').textContent = activity.tip;
 
+        incrementUsage();
+        updateUsageUI();
         resultCard.style.display = 'block';
         againBtn.style.display = 'block';
 
