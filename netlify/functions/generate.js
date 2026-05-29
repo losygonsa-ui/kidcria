@@ -48,13 +48,17 @@ Responda APENAS com JSON válido, sem texto antes ou depois:
     );
 
     const data = await response.json();
+    console.log('Gemini status:', response.status);
+    console.log('Gemini response:', JSON.stringify(data));
+
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     let activity;
     try {
       const clean = text.replace(/```json|```/g, '').trim();
       activity = JSON.parse(clean);
-    } catch {
+    } catch (parseErr) {
+      console.log('Parse error:', parseErr.message, 'Text was:', text);
       return { statusCode: 500, body: JSON.stringify({ error: 'Failed to parse activity' }) };
     }
 
@@ -64,6 +68,7 @@ Responda APENAS com JSON válido, sem texto antes ou depois:
       body: JSON.stringify(activity),
     };
   } catch (error) {
+    console.log('Fetch error:', error.message);
     return { statusCode: 500, body: JSON.stringify({ error: 'Internal server error' }) };
   }
 };
